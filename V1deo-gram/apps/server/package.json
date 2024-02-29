@@ -5,7 +5,7 @@
     "scripts": {
         "start": "node dist/index",
         "build": "tsc-p .",
-        "dev":"tsc-watch ==onSuccess \"node dist/index.js\""
+        "dev":"tsc-watch --onSuccess \"node dist/index.js\""
     },
     "dependencies": {
         "tsc-watch": "^6.0.4",
