@@ -5,9 +5,10 @@
     "scripts": {
         "start": "node dist/index",
         "build": "tsc-p .",
-        "dev":"tsc-watch --onSuccess \"node dist/index.js\""
+        "dev": "tsc-watch --onSuccess \"node dist/index.js\""
     },
     "dependencies": {
+        "node-rdkafka": "^2.18.0",
         "tsc-watch": "^6.0.4",
         "typescript": "^5.3.3"
     }
