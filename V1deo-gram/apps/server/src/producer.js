@@ -1,9 +1,9 @@
 const Kafka = require("node-rdkafka");
 
-const TOPIC_NAME = "Videogram";
+const TOPIC_NAME = "demo_topic";
 
 const producer = new Kafka.Producer({
-  'metadata.broker.list': "kafka-17907454-v1deo-gram.a.aivencloud.com:26683",
+  'metadata.broker.list': "kafka-17907454-v1deo-gram.a.aivencloud.com:26681",
   "security.protocol": "ssl",
   "ssl.key.location": "service.key",
   "ssl.certificate.location": "service.cert",

@@ -1,10 +1,10 @@
 const Kafka = require("node-rdkafka");
 
-const TOPIC_NAME = "Videogram";
+const TOPIC_NAME = "demo_topic";
 
 const stream = new Kafka.createReadStream(
   {
-    "metadata.broker.list": "kafka-17907454-v1deo-gram.a.aivencloud.com:26683",
+    "metadata.broker.list": "kafka-17907454-v1deo-gram.a.aivencloud.com:26681",
     "group.id": "GROUP_ID",
     "security.protocol": "ssl",
     "ssl.key.location": "service.key",
