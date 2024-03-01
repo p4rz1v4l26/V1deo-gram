@@ -1,9 +1,10 @@
 const Kafka = require("node-rdkafka");
 const fs = require("fs");
-const zlib = require("zlib");
 
 const TOPIC_NAME = "demo_topic";
 const OUTPUT_FILE = "output.mp4";
+
+let isVideoReceived = false; // Flag to track video reception
 
 const stream = new Kafka.createReadStream(
   {
@@ -22,31 +23,31 @@ const writeStream = fs.createWriteStream(OUTPUT_FILE);
 
 stream.on("data", (message) => {
   try {
-    const compressedData = zlib.gzipSync(message.value);
-    writeStream.write(compressedData);
-    console.log("Received and wrote compressed data to file:", OUTPUT_FILE);
+    const data = message.value;
+    writeStream.write(data);
+    console.log("Received and wrote video data to file.");
+    isVideoReceived = true; // Set the flag to true once video is received
   } catch (err) {
     console.error("Error processing message:", err);
+  }
+  
+  if (isVideoReceived) {
+    stream.close(); // Close the stream to stop receiving further messages
+    console.log("Stopped receiving messages.");
   }
 });
 
 stream.on("end", () => {
   writeStream.end();
-  console.log("Finished receiving and compressing video.");
+  console.log(`Finished writing video to ${OUTPUT_FILE}`);
 });
 
-stream.consumer.on("event.error", (err) => {
-  console.error("Consumer error:", err);
+stream.on("error", (err) => {
+  console.error("Stream error:", err);
 });
 
-stream.consumer.on("disconnected", () => {
-  console.log("Consumer disconnected.");
-});
-
-stream.consumer.on("event.log", (log) => {
-  console.log("Consumer log:", log);
-});
-
-stream.consumer.on("event.stats", (stats) => {
-  console.log("Consumer stats:", stats);
+// Handle process termination
+process.on('SIGINT', () => {
+  writeStream.end();
+  process.exit();
 });

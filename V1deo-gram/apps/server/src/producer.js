@@ -20,7 +20,7 @@ const sleep = async (timeInMs) =>
 const produceMessagesOnSecondIntervals = async () => {
   // produce 100 messages on 1 second intervals
   let i = 0;
-  while (i < 100) {
+  while (i++ < 100) {
     try {
       if (!producer.isConnected()) {
         await sleep(1000);
