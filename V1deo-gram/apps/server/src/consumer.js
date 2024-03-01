@@ -1,10 +1,7 @@
 const Kafka = require("node-rdkafka");
-const fs = require("fs");
+const { spawn } = require("child_process");
 
 const TOPIC_NAME = "demo_topic";
-const OUTPUT_FILE = "output.mp4";
-
-let isVideoReceived = false; // Flag to track video reception
 
 const stream = new Kafka.createReadStream(
   {
@@ -19,27 +16,31 @@ const stream = new Kafka.createReadStream(
   { topics: [TOPIC_NAME] }
 );
 
-const writeStream = fs.createWriteStream(OUTPUT_FILE);
+const videoStream = spawn("ffmpeg", [
+  "-f", "dshow",
+  "-i", "video=Integrated Webcam",
+  "-f", "mpegts",
+  "-codec:v", "mpeg1video",
+  "-s", "640x480",
+  "-b:v", "800k",
+  "-bf", "0",
+  "-muxdelay", "0.001",
+  "-"
+]);
 
-stream.on("data", (message) => {
+videoStream.stdout.on("data", (data) => {
   try {
-    const data = message.value;
-    writeStream.write(data);
-    console.log("Received and wrote video data to file.");
-    isVideoReceived = true; // Set the flag to true once video is received
+    stream.produce(
+      TOPIC_NAME,
+      null,
+      data,
+      null,
+      Date.now()
+    );
+    console.log("Sent video data to Kafka.");
   } catch (err) {
-    console.error("Error processing message:", err);
+    console.error("Error sending video data to Kafka:", err);
   }
-  
-  if (isVideoReceived) {
-    stream.close(); // Close the stream to stop receiving further messages
-    console.log("Stopped receiving messages.");
-  }
-});
-
-stream.on("end", () => {
-  writeStream.end();
-  console.log(`Finished writing video to ${OUTPUT_FILE}`);
 });
 
 stream.on("error", (err) => {
@@ -48,6 +49,6 @@ stream.on("error", (err) => {
 
 // Handle process termination
 process.on('SIGINT', () => {
-  writeStream.end();
+  videoStream.kill();
   process.exit();
 });
