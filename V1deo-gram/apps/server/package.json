@@ -10,6 +10,7 @@
     "dependencies": {
         "node-rdkafka": "^2.18.0",
         "tsc-watch": "^6.0.4",
-        "typescript": "^5.3.3"
+        "typescript": "^5.3.3",
+        "zlib": "^1.0.5"
     }
 }
